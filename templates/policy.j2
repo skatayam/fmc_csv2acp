@@ -1,0 +1,64 @@
+[
+  {%- for rule in data %}
+  {
+    "action": "{{ rule.action }}",
+    "sendEventsToFMC": true,
+    "enabled": true,
+    "type": "AccessRule",
+    "logBegin": false,
+    "logFiles": false,
+    "name": "{{ rule.name }}",
+    "sourcePorts": {
+      "literals": [
+        {
+          "type": "PortLiteral",
+          "protocol": "{{ rule.proto }}",
+          "port": "{{ rule.src_port }}"
+        }
+      ]
+    },
+    "destinationPorts": {
+      "literals": [
+        {
+          "type": "PortLiteral",
+          "protocol": "{{ rule.proto }}",
+          "port": "{{ rule.dst_port }}"
+        }
+      ]
+    },
+    "sourceNetworks": {
+      "literals": [
+        {
+          "type": "Network",
+          "value": "{{ rule.src_nw }}"
+        }
+      ]
+    },
+    "destinationNetworks": {
+      "literals": [
+        {
+          "type": "Network",
+          "value": "{{ rule.dst_nw }}"
+        }
+      ]
+    },
+    "logEnd": true
+    {%- if rule.action == "ALLOW" -%}
+    ,
+    "ipsPolicy": {
+      "type": "IntrusionPolicy",
+      "id": "abba00a0-cf29-425c-9d75-49699aadc898",
+      "name": "Balanced Security and Connectivity"
+    },
+    "variableSet": {
+      "name": "Default-Set",
+      "id": "76fa83ea-c972-11e2-8be8-8e45bb1343c0",
+      "type": "VariableSet"
+    }
+    {%- endif %}
+  }
+  {%- if loop.index < data|length -%}
+  ,
+  {%- endif %}
+  {%- endfor %}
+]
